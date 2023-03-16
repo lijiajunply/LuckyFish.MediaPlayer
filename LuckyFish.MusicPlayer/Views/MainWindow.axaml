@@ -22,7 +22,7 @@
         <!-- menu -->
         <Menu Grid.Row="0">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open..."/>
+                <MenuItem Click="OpenClick" Header="Open..."/>
                 <Separator/>
                 <MenuItem Header="_Exit"/>
             </MenuItem>
@@ -37,10 +37,8 @@
         </Grid>
         <!-- player -->
         <WrapPanel Grid.Row="2">
-            <Grid>
-                <vlc:VideoView Grid.Row="0" Name="View" MediaPlayer="{Binding Player}"/>
-                <Button Command="{Binding Play}"> = </Button>
-            </Grid>
+            <vlc:VideoView  Name="View" MediaPlayer="{Binding Player}"/>
+            <Button Command="{Binding Play}"> = </Button>
         </WrapPanel>
     </Grid>
     
