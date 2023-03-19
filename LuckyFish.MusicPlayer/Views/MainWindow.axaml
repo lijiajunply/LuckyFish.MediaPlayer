@@ -10,9 +10,9 @@
         Title="LuckyFish.MusicPlayer">
 
     <Design.DataContext>
-        <vm:MainWindowViewModel/>
+        <vm:MainWindowViewModel />
     </Design.DataContext>
-    
+
     <Grid ShowGridLines="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -22,24 +22,32 @@
         <!-- menu -->
         <Menu Grid.Row="0">
             <MenuItem Header="_File">
-                <MenuItem Click="OpenClick" Header="Open..."/>
-                <Separator/>
-                <MenuItem Header="_Exit"/>
+                <MenuItem Click="OpenClick" Header="Open..." />
+                <Separator />
+                <MenuItem Header="_Exit" />
             </MenuItem>
-            <MenuItem Header="_Edit">
-                <MenuItem Header="Copy"/>
-                <MenuItem Header="Paste"/>
+            <MenuItem Header="Login..">
+                <MenuItem Click="NetEaseLogin" Header="NetEase.." />
+                <MenuItem Click="QQMusicLogin" Header="QQMusic.."/>
             </MenuItem>
         </Menu>
         <!-- main window -->
         <Grid Grid.Row="1">
-            
+            <TabControl>
+                <TabItem Header="Song" VerticalContentAlignment="Center">
+                    <ListBox></ListBox>
+                </TabItem>
+            </TabControl>
         </Grid>
         <!-- player -->
         <WrapPanel Grid.Row="2">
-            <vlc:VideoView  Name="View" MediaPlayer="{Binding Player}"/>
-            <Button Command="{Binding Play}"> = </Button>
+            <vlc:VideoView Name="View" MediaPlayer="{Binding Player}" />
+            <TextBlock Text="{Binding FileName}"></TextBlock>
+            <Button Command="{Binding Play}">
+                <Image Width="15" Source="{Binding PlayImage}"></Image>
+            </Button>
+            <Slider Tapped="MusicTapped" Width="400" Maximum="1" Value="{Binding Pos}"></Slider>
         </WrapPanel>
     </Grid>
-    
+
 </Window>

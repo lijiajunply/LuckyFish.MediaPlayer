@@ -1,7 +1,5 @@
-using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using LibVLCSharp.Shared;
 using LuckyFish.MusicPlayer.ViewModels;
 
 namespace LuckyFish.MusicPlayer.Views;
@@ -19,8 +17,25 @@ public partial class MainWindow : Window
         var result = await a.ShowAsync(this);
         if (result[0] is not null or "")
         {
-            (DataContext as MainWindowViewModel).PlayChange(result[0]);
-            (DataContext as MainWindowViewModel).Play();
+            var data = DataContext as MainWindowViewModel;
+            data.PlayChange(result[0]);
         }
+    }
+
+    private void MusicTapped(object? sender, RoutedEventArgs e)
+    {
+        (DataContext as MainWindowViewModel).Player.Position = (float)(sender as Slider).Value;
+    }
+
+    private async void NetEaseLogin(object? sender, RoutedEventArgs e)
+    {
+        var data = new LoginViewModel("NetEaseLogin");
+        var window = new LoginView(data);
+        await window.ShowDialog(this);
+    }
+
+    private void QQMusicLogin(object? sender, RoutedEventArgs e)
+    {
+        
     }
 }

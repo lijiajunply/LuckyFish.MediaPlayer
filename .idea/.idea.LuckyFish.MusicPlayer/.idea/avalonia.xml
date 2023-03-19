@@ -3,6 +3,7 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="LuckyFish.MusicPlayer/Views/LoginView.axaml" value="LuckyFish.MusicPlayer/LuckyFish.MusicPlayer.csproj" />
         <entry key="LuckyFish.MusicPlayer/Views/MainWindow.axaml" value="LuckyFish.MusicPlayer/LuckyFish.MusicPlayer.csproj" />
       </map>
     </option>

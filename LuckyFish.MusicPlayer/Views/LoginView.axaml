@@ -1,0 +1,22 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:LuckyFish.MusicPlayer.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="LuckyFish.MusicPlayer.Views.LoginView"
+        Title="LoginView">
+        <Design.DataContext>
+                <vm:LoginViewModel></vm:LoginViewModel>
+        </Design.DataContext>
+        <Grid>
+                <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="{Binding LoginInfo}"></TextBlock>
+                <Image Grid.Row="1" Source="{Binding LoginImage}"></Image>
+                <Button Click="ReturnClick" Grid.Row="2">Return</Button>
+        </Grid>
+</Window>
