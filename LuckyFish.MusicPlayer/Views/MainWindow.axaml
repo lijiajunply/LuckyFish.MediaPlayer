@@ -35,14 +35,36 @@
         <Grid Grid.Row="1">
             <TabControl>
                 <TabItem Header="Song" VerticalContentAlignment="Center">
-                    <ListBox></ListBox>
+                    <ListBox Items="{Binding MusicUrl}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Tapped="SelectionTapped" ColumnDefinitions="*,*,*">
+                                    <TextBlock Text="{Binding Name}" Grid.Column="0"></TextBlock>
+                                    <TextBlock Text="{Binding Url}" Grid.Column="1"></TextBlock>
+                                    <TextBlock Text="{Binding Id}" Grid.Column="2"></TextBlock>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
+                <TabItem Header="PlayList" VerticalContentAlignment="Center">
+                    <ListBox Items="{Binding Playlist}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Tapped="SelectionTapped" ColumnDefinitions="*,*,*">
+                                    <TextBlock Text="{Binding Name}" Grid.Column="0"></TextBlock>
+                                    <TextBlock Text="{Binding Url}" Grid.Column="1"></TextBlock>
+                                    <TextBlock Text="{Binding Id}" Grid.Column="2"></TextBlock>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate></ListBox>
                 </TabItem>
             </TabControl>
         </Grid>
         <!-- player -->
         <WrapPanel Grid.Row="2">
             <vlc:VideoView Name="View" MediaPlayer="{Binding Player}" />
-            <TextBlock Text="{Binding FileName}"></TextBlock>
+            <TextBlock Text="{Binding Url}"></TextBlock>
             <Button Command="{Binding Play}">
                 <Image Width="15" Source="{Binding PlayImage}"></Image>
             </Button>

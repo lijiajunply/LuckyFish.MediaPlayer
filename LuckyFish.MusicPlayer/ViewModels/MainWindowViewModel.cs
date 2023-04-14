@@ -5,23 +5,42 @@ using System.IO;
 using System.Linq;
 using Avalonia.Media;
 using LibVLCSharp.Shared;
+using LuckyFish.MusicPlayer.Models;
 using LuckyFish.MusicPlayer.Server;
 
 namespace LuckyFish.MusicPlayer.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
+    #region Account
+
+    public string UserId { get; set; }
+
+    public void Login(string softName)
+    {
+        MusicApi api = softName == "NetEaseMusic" ? NetServer.NetEaseUrl : NetServer.QQMusicUrl;
+        NetServer.GetData(api.Url + api.UserInfo);
+    }
+
+    #endregion
     #region Musics
 
-    private string _dirPath;
-    public string DirPath
+    private ObservableCollection<MusicModel> _playlist = new ();
+    public ObservableCollection<MusicModel> Playlist
+    {
+        get => _playlist;
+        set => SetField(ref _playlist, value);
+    }
+
+    private string? _dirPath;
+    private string? DirPath
     {
         get => _dirPath;
         set => SetField(ref _dirPath, value);
     }
 
-    private ObservableCollection<string> _musicUrl = new ObservableCollection<string>();
-    public ObservableCollection<string> MusicUrl
+    private ObservableCollection<MusicModel> _musicUrl = new ();
+    public ObservableCollection<MusicModel> MusicUrl
     {
         get => _musicUrl;
         set => SetField(ref _musicUrl, value);
@@ -48,13 +67,14 @@ public class MainWindowViewModel : ViewModelBase
         set => SetField(ref _playImage, value);
     }
 
-    private string _fileName;
+    private string _url;
 
-    public string FileName
+    public string Url
     {
-        get => _fileName;
+        get => _url;
         set
         {
+            DirChanged(value);
             bool isInit = false;
             if (Player != null)
             {
@@ -64,7 +84,7 @@ public class MainWindowViewModel : ViewModelBase
             using var libvlc = new LibVLC(enableDebugLogs: true);
             using var media = new Media(libvlc, new Uri(value));
             Player = new MediaPlayer(media);
-            SetField(ref _fileName, Path.GetFileNameWithoutExtension(value));
+            SetField(ref _url, Path.GetFileNameWithoutExtension(value));
             Player.PositionChanged += (sender, e) => Pos = e.Position;
             if (!isInit) return;
             IsPlay = false;
@@ -83,7 +103,7 @@ public class MainWindowViewModel : ViewModelBase
     #endregion
     
 
-    public void PlayChange(string url) => FileName = url;
+    public void PlayChange(string url) => Url = url;
 
     public MainWindowViewModel()
     {
@@ -107,10 +127,18 @@ public class MainWindowViewModel : ViewModelBase
         IsPlay = !IsPlay;
     }
 
-    public void DirChanged(string filename)
+    private void DirChanged(string url)
     {
-        DirPath = Path.GetDirectoryName(filename);
-        var dir = new DirectoryInfo(DirPath);
-        MusicUrl = new ObservableCollection<string>(dir.GetFiles().Where(x => x.Extension == "").Select(x => x.FullName)) ;
+        DirPath = Path.GetDirectoryName(url);
+        if (DirPath == null)
+        {
+            
+        }
+        else
+        {
+            var dir = new DirectoryInfo(DirPath);
+            MusicUrl = new ObservableCollection<MusicModel>(dir.GetFiles().Where(x => x.Extension is ".mp3" or ".flac").Select(x => new MusicModel(x.FullName))) ;
+        }
+        
     }
 }

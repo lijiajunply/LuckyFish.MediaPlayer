@@ -29,7 +29,7 @@ public partial class LoginView : Window
     {
         MusicApi api = (DataContext as LoginViewModel).LoginInfo == "NetEaseLogin" ? NetServer.NetEaseUrl : NetServer.QQMusicUrl;
         var data = NetServer.GetData(api.Url+api.LoginCheck+"?key="+(DataContext as LoginViewModel).Key);
-        return data.ToString() == "803";
+        return data["code"].ToString() == "803";
     }
 
     private void ReturnClick(object? sender, RoutedEventArgs e)

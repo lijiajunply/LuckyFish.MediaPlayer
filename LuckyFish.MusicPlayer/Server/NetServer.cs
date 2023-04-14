@@ -12,6 +12,10 @@ public static class NetServer
 
     public static JObject GetData(Dictionary<string,string> data,string url)
     {
+        var handler = new HttpClientHandler();
+
+        handler.ServerCertificateCustomValidationCallback +=
+            (sender, certificate, chain, errors) => true;
         StringBuilder builder = new StringBuilder("?");
         foreach (var v in data)
             builder.Append($"{v.Key}={v.Value}&");
@@ -21,7 +25,12 @@ public static class NetServer
     }
 
     public static JObject GetData(string url)
-        => JObject.Parse(new HttpClient().GetStringAsync(url).Result);
+    {
+        var handler = new HttpClientHandler();
+        handler.ServerCertificateCustomValidationCallback +=
+            (sender, certificate, chain, errors) => true;
+        return JObject.Parse(new HttpClient().GetStringAsync(url).Result);
+    } 
     
 
     public static void PostData(JObject obj)
@@ -32,7 +41,7 @@ public static class NetServer
 
 public class MusicApi
 {
-    public MusicApi(string url, string loginCreate, string loginQrCode, string loginCheck, string logOut, string userPlaylist, string playlist, string lyric, string newSong)
+    public MusicApi(string url, string loginCreate, string loginQrCode, string loginCheck, string logOut, string userPlaylist, string playlist, string lyric, string newSong,string userInfo)
     {
         Url = url;
         LoginCreate = loginCreate;
@@ -43,6 +52,7 @@ public class MusicApi
         Playlist = playlist;
         Lyric = lyric;
         NewSong = newSong;
+        UserInfo = userInfo;
     }
     public MusicApi(string url)
     {
@@ -54,7 +64,8 @@ public class MusicApi
         UserPlaylist = "user/playlist";
         Playlist = "playlist/update";
         Lyric = "lyric";
-        NewSong = "/personalized/newsong";
+        NewSong = "personalized/newsong";
+        UserInfo = "user/subcount";
     }
 
     public string Url { get; set; }
@@ -62,6 +73,7 @@ public class MusicApi
     public string LoginQrCode { get; set; }
     public string LoginCheck { get; set; }
     public string LogOut { get; set; }
+    public string UserInfo { get; set; }
     public string UserPlaylist { get; set; }
     public string Playlist { get; set; }
     public string Lyric { get; set; }
