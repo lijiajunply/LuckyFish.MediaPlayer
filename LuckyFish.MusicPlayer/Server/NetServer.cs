@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using LuckyFish.MusicPlayer.Models;
 using Newtonsoft.Json.Linq;
 
 namespace LuckyFish.MusicPlayer.Server;
@@ -41,6 +42,19 @@ public static class NetServer
 
 public class MusicApi
 {
+    public MusicApi(MusicApi api)
+    {
+        Url = api.Url;
+        LoginCreate = api.LoginCreate;
+        LoginQrCode = api.LoginQrCode;
+        LoginCheck = api.LoginCheck;
+        LogOut = api.LogOut;
+        UserInfo = api.UserInfo;
+        UserPlaylist = api.UserPlaylist;
+        Playlist = api.Playlist;
+        Lyric = api.Lyric;
+        NewSong = api.NewSong;
+    }
     public MusicApi(string url, string loginCreate, string loginQrCode, string loginCheck, string logOut, string userPlaylist, string playlist, string lyric, string newSong,string userInfo)
     {
         Url = url;
