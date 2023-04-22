@@ -65,23 +65,15 @@ public class MainWindowViewModel : ViewModelBase
         get => _playlist;
         set => SetField(ref _playlist, value);
     }
-
+    
+    /// <summary>
+    /// the pos of the music in the playlist
+    /// </summary>
+    private int Index { get; set; }
+    
     #endregion
 
     #region Playing
-
-    private int Index { get; set; }
-
-    private string _mode = "";
-
-    /// <summary>
-    /// Mode : Single Loop| List | Random | Single
-    /// </summary>
-    public string Mode
-    {
-        get => _mode;
-        set => SetField(ref _mode, value);
-    }
 
     private float _pos;
 
@@ -120,14 +112,26 @@ public class MainWindowViewModel : ViewModelBase
 
             SetField(ref _url, Path.GetFileNameWithoutExtension(value));
 
-            Player.PositionChanged += (_, e) =>
-                Pos = e.Position;
+            Player.PositionChanged += PositionChange;
             Player.EndReached += Done;
 
             if (!isInit) return;
             IsPlaying = false;
             Play();
         }
+    }
+
+    private bool IsPlaying { get; set; }
+
+    #endregion
+
+    #region PlayerSetting
+
+    #region PlayerEvents
+
+    private void PositionChange(object? sender, MediaPlayerPositionChangedEventArgs e)
+    {
+        Pos = e.Position;
     }
 
     private void Done(object? sender, EventArgs e)
@@ -145,7 +149,10 @@ public class MainWindowViewModel : ViewModelBase
                 break;
             case "Random":
                 Random random = new Random();
-                Index = random.Next(0, Playlist.Count - 1);
+                int ran = random.Next(0, Playlist.Count - 1);
+                Index = ran == Index?Index+1:ran;
+                if (Index >= Playlist.Count || Index <= 0)
+                    Index = 0;
                 break;
         }
 
@@ -153,17 +160,58 @@ public class MainWindowViewModel : ViewModelBase
         ThreadPool.QueueUserWorkItem(_ => Url = s);
     }
 
-
-    private bool IsPlaying { get; set; }
-
     #endregion
+    
+    private string _mode = "Single";
 
-    public void PlayChange(string url) => Url = url;
-
-    public MainWindowViewModel()
+    /// <summary>
+    /// Mode : Single Loop| List | Random | Single
+    /// </summary>
+    public string Mode
     {
-        PlayImage = ImageServer.PauseImage;
-        PlayChange(ImageServer.CodePath + "\\Assets\\杨振宇 - 我们还是做朋友吧.flac");
+        get => _mode;
+        set => SetField(ref _mode, value);
+    }
+
+    /// <summary>
+    /// Mode change : Single -> Single Loop -> List -> Random -> Single
+    /// </summary>
+    public void ModeChange()
+    {
+        if (Mode == "Single")
+        {
+            Mode = "Single Loop";
+            PlayModeImage = ImageServer.SingleLoop;
+            return;
+        }
+
+        if (Mode == "Single Loop")
+        {
+            Mode = "List";
+            PlayModeImage = ImageServer.ListLoop;
+            return;
+        }
+
+        if (Mode == "List")
+        {
+            Mode = "Random";
+            PlayModeImage = ImageServer.RandomLoop;
+            return;
+        }
+
+        if (Mode == "Random")
+        {
+            Mode = "Single";
+            PlayModeImage = ImageServer.Single;
+        }
+    }
+
+    private IImage _playModeImage = ImageServer.Single;
+
+    public IImage PlayModeImage
+    {
+        get => _playModeImage;
+        set => SetField(ref _playModeImage, value);
     }
 
     private MediaPlayer? _player;
@@ -174,11 +222,15 @@ public class MainWindowViewModel : ViewModelBase
         set => SetField(ref _player, value);
     }
 
+    #endregion
+
     #region Func
+
+    public void PlayChange(string url) => Url = url;
 
     public void Play()
     {
-        if(Player == null)return;
+        if (Player == null) return;
         if (IsPlaying)
         {
             Player.Pause();
@@ -198,7 +250,6 @@ public class MainWindowViewModel : ViewModelBase
         DirPath = Path.GetDirectoryName(url);
         if (DirPath == null)
         {
-            
         }
         else
         {
@@ -211,4 +262,13 @@ public class MainWindowViewModel : ViewModelBase
     }
 
     #endregion
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public MainWindowViewModel()
+    {
+        PlayImage = ImageServer.PauseImage;
+        PlayChange(ImageServer.CodePath + "\\Assets\\杨振宇 - 我们还是做朋友吧.flac");
+    }
 }

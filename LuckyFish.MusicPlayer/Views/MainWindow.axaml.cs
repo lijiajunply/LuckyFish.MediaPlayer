@@ -107,8 +107,23 @@ public partial class MainWindow : Window
         this.Close();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void ShowContext(object? sender, KeyEventArgs e)
     {
         
+    }
+
+    /// <summary>
+    /// Mode change : Single -> Single Loop -> List Loop -> Random Loop -> Single
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void ModeChangeTapped(object? sender, RoutedEventArgs e)
+    {
+        (DataContext as MainWindowViewModel)?.ModeChange();
     }
 }

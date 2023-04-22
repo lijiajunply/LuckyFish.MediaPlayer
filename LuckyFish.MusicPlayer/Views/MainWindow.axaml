@@ -79,6 +79,7 @@
             <Grid Tapped="DetailTapped">
                 <TextBlock Text="{Binding Url}"></TextBlock>
             </Grid>
+            <Image Tapped="ModeChangeTapped" Width="15" Source="{Binding PlayModeImage}"></Image>
             <Button Command="{Binding Play}">
                 <Image Width="15" Source="{Binding PlayImage}"></Image>
             </Button>
