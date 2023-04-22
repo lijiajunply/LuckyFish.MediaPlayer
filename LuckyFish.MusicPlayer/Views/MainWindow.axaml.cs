@@ -1,4 +1,6 @@
+using System;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using LuckyFish.MusicPlayer.Models;
 using LuckyFish.MusicPlayer.ViewModels;
@@ -12,21 +14,60 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
+    /// <summary>
+    /// open the file
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void OpenClick(object? sender, RoutedEventArgs e)
     {
-        var a = new OpenFileDialog();
-        var result = await a.ShowAsync(this);
-        if (result[0] is not null or "")
+        try
         {
-            var data = DataContext as MainWindowViewModel;
-            data.PlayChange(result[0]);
+            var a = new OpenFileDialog();
+            var result = await a.ShowAsync(this);
+            if (result?[0] is not null or "")
+                if (DataContext is MainWindowViewModel data)
+                    data.PlayChange(result[0]);
+        }
+        catch (Exception)
+        {
+            
         }
     }
 
+    /// <summary>
+    /// change the current location
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void MusicTapped(object? sender, RoutedEventArgs e)
     {
-        (DataContext as MainWindowViewModel).Player.Position = (float)(sender as Slider).Value;
+        (DataContext as MainWindowViewModel)!.Player.Position = (float)(sender as Slider)!.Value;
     }
+
+    /// <summary>
+    /// Selection the media
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void SelectionTapped(object? sender, RoutedEventArgs e)
+    {
+        var model = (sender as Grid).DataContext as MusicModel;
+        (DataContext as MainWindowViewModel).PlayChange(model.Url);
+    }
+
+    /// <summary>
+    /// show the song detail info
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void DetailTapped(object? sender, RoutedEventArgs e)
+    {
+        
+    }
+
+
+    #region Login
 
     private async void NetEaseLogin(object? sender, RoutedEventArgs e)
     {
@@ -43,9 +84,31 @@ public partial class MainWindow : Window
         await window.ShowDialog(this);
     }
 
-    private void SelectionTapped(object? sender, RoutedEventArgs e)
+    #endregion
+
+    /// <summary>
+    /// change playlist
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void PlaylistTapped(object? sender, RoutedEventArgs e)
     {
-        var model = (sender as Grid).DataContext as MusicModel;
-        (DataContext as MainWindowViewModel).PlayChange(model.Url);
+        if ((sender as Control)!.DataContext is not PlaylistModel data)return;
+        (DataContext as MainWindowViewModel)!.PlayChange(data.Url);
+    }
+
+    /// <summary>
+    /// exit the app
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void ExitClick(object? sender, RoutedEventArgs e)
+    {
+        this.Close();
+    }
+
+    private void ShowContext(object? sender, KeyEventArgs e)
+    {
+        
     }
 }

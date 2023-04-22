@@ -24,47 +24,61 @@
             <MenuItem Header="_File">
                 <MenuItem Click="OpenClick" Header="Open..." />
                 <Separator />
-                <MenuItem Header="_Exit" />
+                <MenuItem Click="ExitClick" Header="_Exit" />
             </MenuItem>
-            <MenuItem Header="Login..">
-                <MenuItem Click="NetEaseLogin" Header="NetEase.." />
-                <MenuItem Click="QQMusicLogin" Header="QQMusic.."/>
-            </MenuItem>
+            <!-- <MenuItem Header="Login.."> -->
+            <!--     <MenuItem Click="NetEaseLogin" Header="NetEase.." /> -->
+            <!--     <MenuItem Click="QQMusicLogin" Header="QQMusic.." /> -->
+            <!-- </MenuItem> -->
         </Menu>
         <!-- main window -->
         <Grid Grid.Row="1">
-            <TabControl>
-                <TabItem Header="Song" VerticalContentAlignment="Center">
-                    <ListBox Items="{Binding MusicUrl}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <!-- playlist -->
+            <ListBox Grid.Column="0" Items="{Binding Playlist}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid KeyDown="ShowContext" Tapped="SelectionTapped">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Image Width="15" Grid.Column="0" Source="{Binding Image}"></Image>
+                            <TextBlock IsVisible="True" Text="{Binding Name}" Grid.Column="1"></TextBlock>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- tab -->
+            <TabControl Grid.Column="1">
+                <TabItem Header="PlayList" VerticalContentAlignment="Center">
+                    <ListBox Items="{Binding Playlists}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Grid Tapped="SelectionTapped" ColumnDefinitions="*,*,*">
-                                    <TextBlock Text="{Binding Name}" Grid.Column="0"></TextBlock>
-                                    <TextBlock Text="{Binding Url}" Grid.Column="1"></TextBlock>
-                                    <TextBlock Text="{Binding Id}" Grid.Column="2"></TextBlock>
+                                <Grid Tapped="PlaylistTapped" ColumnDefinitions="*,*">
+                                    <TextBlock Grid.Column="0" Text="{Binding Name}"></TextBlock>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </TabItem>
-                <TabItem Header="PlayList" VerticalContentAlignment="Center">
-                    <ListBox Items="{Binding Playlist}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Tapped="SelectionTapped" ColumnDefinitions="*,*,*">
-                                    <TextBlock Text="{Binding Name}" Grid.Column="0"></TextBlock>
-                                    <TextBlock Text="{Binding Url}" Grid.Column="1"></TextBlock>
-                                    <TextBlock Text="{Binding Id}" Grid.Column="2"></TextBlock>
-                                </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate></ListBox>
+                
+                <TabItem Header="Song" VerticalContentAlignment="Center">
+                    
                 </TabItem>
             </TabControl>
         </Grid>
         <!-- player -->
         <WrapPanel Grid.Row="2">
             <vlc:VideoView Name="View" MediaPlayer="{Binding Player}" />
-            <TextBlock Text="{Binding Url}"></TextBlock>
+            <Grid Tapped="DetailTapped">
+                <TextBlock Text="{Binding Url}"></TextBlock>
+            </Grid>
             <Button Command="{Binding Play}">
                 <Image Width="15" Source="{Binding PlayImage}"></Image>
             </Button>
