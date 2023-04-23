@@ -3,8 +3,12 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="LuckyFish.MusicPlayer/App.axaml" value="LuckyFish.MusicPlayer/LuckyFish.MusicPlayer.csproj" />
+        <entry key="LuckyFish.MusicPlayer/UserControls/PlaylistControl.axaml" value="LuckyFish.MusicPlayer/LuckyFish.MusicPlayer.csproj" />
         <entry key="LuckyFish.MusicPlayer/Views/LoginView.axaml" value="LuckyFish.MusicPlayer/LuckyFish.MusicPlayer.csproj" />
         <entry key="LuckyFish.MusicPlayer/Views/MainWindow.axaml" value="LuckyFish.MusicPlayer/LuckyFish.MusicPlayer.csproj" />
+        <entry key="LuckyFish.MusicPlayer/Views/SettingView.axaml" value="LuckyFish.MusicPlayer/LuckyFish.MusicPlayer.csproj" />
+        <entry key="LuckyFish.MusicPlayer/Views/TextView.axaml" value="LuckyFish.MusicPlayer/LuckyFish.MusicPlayer.csproj" />
       </map>
     </option>
   </component>

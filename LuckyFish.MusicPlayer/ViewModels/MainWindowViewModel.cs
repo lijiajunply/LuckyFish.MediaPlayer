@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using Avalonia.Media;
 using LibVLCSharp.Shared;
+using LuckyFish.MusicPlayer.ControlModels;
 using LuckyFish.MusicPlayer.Models;
 using LuckyFish.MusicPlayer.Server;
 
@@ -33,12 +34,21 @@ public class MainWindowViewModel : ViewModelBase
 
     #region Musics
 
-    private ObservableCollection<PlaylistModel> _playlists = new();
+    public bool IsHistory { get; set; } = false;
+    private ObservableCollection<MusicModel> _histories = new();
+
+    public ObservableCollection<MusicModel> Histories
+    {
+        get => _histories;
+        set => SetField(ref _histories, value);
+    }
+
+    private ObservableCollection<PlaylistControlModel> _playlists = new() { new PlaylistControlModel() };
 
     /// <summary>
     /// playlists
     /// </summary>
-    public ObservableCollection<PlaylistModel> Playlists
+    public ObservableCollection<PlaylistControlModel> Playlists
     {
         get => _playlists;
         set => SetField(ref _playlists, value);
@@ -65,12 +75,12 @@ public class MainWindowViewModel : ViewModelBase
         get => _playlist;
         set => SetField(ref _playlist, value);
     }
-    
+
     /// <summary>
     /// the pos of the music in the playlist
     /// </summary>
     private int Index { get; set; }
-    
+
     #endregion
 
     #region Playing
@@ -136,32 +146,11 @@ public class MainWindowViewModel : ViewModelBase
 
     private void Done(object? sender, EventArgs e)
     {
-        switch (Mode)
-        {
-            case "Single" or "":
-                return;
-            case "Single Loop":
-                break;
-            case "List":
-                Index++;
-                if (Index >= Playlist.Count)
-                    Index = 0;
-                break;
-            case "Random":
-                Random random = new Random();
-                int ran = random.Next(0, Playlist.Count - 1);
-                Index = ran == Index?Index+1:ran;
-                if (Index >= Playlist.Count || Index <= 0)
-                    Index = 0;
-                break;
-        }
-
-        var s = Playlist[Index].Url;
-        ThreadPool.QueueUserWorkItem(_ => Url = s);
+        Next();
     }
 
     #endregion
-    
+
     private string _mode = "Single";
 
     /// <summary>
@@ -226,6 +215,32 @@ public class MainWindowViewModel : ViewModelBase
 
     #region Func
 
+    public void Next()
+    {
+        switch (Mode)
+        {
+            case "Single" or "":
+                return;
+            case "Single Loop":
+                break;
+            case "List":
+                Index++;
+                if (Index >= Playlist.Count)
+                    Index = 0;
+                break;
+            case "Random":
+                Random random = new Random();
+                int ran = random.Next(0, Playlist.Count - 1);
+                Index = ran == Index ? Index + 1 : ran;
+                if (Index >= Playlist.Count || Index <= 0)
+                    Index = 0;
+                break;
+        }
+
+        var s = Playlist[Index].Url;
+        ThreadPool.QueueUserWorkItem(_ => Url = s);
+    }
+
     public void PlayChange(string url) => Url = url;
 
     public void Play()
@@ -254,8 +269,17 @@ public class MainWindowViewModel : ViewModelBase
         else
         {
             var dir = new DirectoryInfo(DirPath);
-            Playlist = new ObservableCollection<MusicModel>(dir.GetFiles().Where(x => x.Extension is ".mp3" or ".flac")
-                .Select(x => new MusicModel(x.FullName)));
+            if (IsHistory)
+            {
+                Playlist = Histories;
+            }
+            else
+            {
+                Playlist = new ObservableCollection<MusicModel>(dir.GetFiles()
+                    .Where(x => x.Extension is ".mp3" or ".flac")
+                    .Select(x => new MusicModel(x.FullName)));
+            }
+
             var model = Playlist.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x.Url) == url);
             if (model != null) Index = Playlist.IndexOf(model);
         }
@@ -263,12 +287,30 @@ public class MainWindowViewModel : ViewModelBase
 
     #endregion
 
+    #region Init
+
     /// <summary>
-    /// 
+    /// MainWindowViewModel
     /// </summary>
     public MainWindowViewModel()
     {
         PlayImage = ImageServer.PauseImage;
         PlayChange(ImageServer.CodePath + "\\Assets\\杨振宇 - 我们还是做朋友吧.flac");
+        var a = PlaylistServer.Read();
+        if (a == null) return;
+        Playlists = new ObservableCollection<PlaylistControlModel>(a.Select(model => new PlaylistControlModel(model)));
+        Histories = new ObservableCollection<MusicModel>();
     }
+
+    public MainWindowViewModel(string url)
+    {
+        PlayImage = ImageServer.PauseImage;
+        PlayChange(url);
+        var a = PlaylistServer.Read();
+        if (a == null) return;
+        Playlists = new ObservableCollection<PlaylistControlModel>(a.Select(model => new PlaylistControlModel(model)));
+        Histories = new ObservableCollection<MusicModel>();
+    }
+
+    #endregion
 }

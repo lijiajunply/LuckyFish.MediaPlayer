@@ -33,12 +33,15 @@ public class LoginViewModel : ViewModelBase
     {
         LoginInfo = loginInfo;
         MusicApi api = LoginInfo == "NetEaseLogin" ? NetServer.NetEaseUrl : NetServer.QQMusicUrl;
-        Key = NetServer.GetData(api.Url+api.LoginCreate)["data"]["unikey"].ToString();
-        JObject context = NetServer.GetData(new Dictionary<string, string>() { { "key", Key },{"qrimg","1"} },api.Url+api.LoginQrCode);
-        var base64 = context["data"]["qrimg"].ToString();
-        base64 = base64.Replace("data:image/png;base64,", "").Replace("data:image/jgp;base64,", "").Replace("data:image/jpg;base64,", "").Replace("data:image/jpeg;base64,", "");//将base64头部信息替换
-        byte[] bytes = Convert.FromBase64String(base64);
-        MemoryStream memStream = new MemoryStream(bytes);
-        LoginImage = new Bitmap(memStream);
+        Key = NetServer.GetData(api.Url+api.LoginCreate)["data"]?["unikey"].ToString();
+        if (Key != null)
+        {
+            JObject context = NetServer.GetData(new Dictionary<string, string>() { { "key", Key },{"qrimg","1"} },api.Url+api.LoginQrCode);
+            var base64 = context["data"]?["qrimg"].ToString();
+            base64 = base64.Replace("data:image/png;base64,", "").Replace("data:image/jgp;base64,", "").Replace("data:image/jpg;base64,", "").Replace("data:image/jpeg;base64,", "");//将base64头部信息替换
+            byte[] bytes = Convert.FromBase64String(base64);
+            MemoryStream memStream = new MemoryStream(bytes);
+            LoginImage = new Bitmap(memStream);
+        }
     }
 }

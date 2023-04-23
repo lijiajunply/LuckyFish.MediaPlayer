@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vlc="clr-namespace:LibVLCSharp.Avalonia;assembly=LibVLCSharp.Avalonia"
+        xmlns:userControls="clr-namespace:LuckyFish.MusicPlayer.UserControls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="LuckyFish.MusicPlayer.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
@@ -13,26 +14,35 @@
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    <Grid ShowGridLines="True">
+    <!-- window -->
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+
         <!-- menu -->
         <Menu Grid.Row="0">
-            <MenuItem Header="_File">
+            <MenuItem Header="File">
                 <MenuItem Click="OpenClick" Header="Open..." />
+                <MenuItem Click="AddPlaylistMenuClick" Header="Add a Playlist"></MenuItem>
+                <MenuItem Click="SettingOpenClick" Header="Setting" />
+                <MenuItem Click="OpenJsonClick" Header="Open the JSON File" />
                 <Separator />
-                <MenuItem Click="ExitClick" Header="_Exit" />
+                <MenuItem Click="ExitClick" Header="Exit" />
             </MenuItem>
             <!-- <MenuItem Header="Login.."> -->
             <!--     <MenuItem Click="NetEaseLogin" Header="NetEase.." /> -->
             <!--     <MenuItem Click="QQMusicLogin" Header="QQMusic.." /> -->
             <!-- </MenuItem> -->
         </Menu>
+
+        <Separator Grid.Row="1" />
+
         <!-- main window -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
@@ -47,8 +57,8 @@
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                                 <ColumnDefinition></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <Image Width="15" Grid.Column="0" Source="{Binding Image}"></Image>
-                            <TextBlock IsVisible="True" Text="{Binding Name}" Grid.Column="1"></TextBlock>
+                            <Image Width="15" Grid.Column="0" Source="{Binding Image}" />
+                            <TextBlock IsVisible="True" Text="{Binding Name}" Grid.Column="1" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -56,34 +66,88 @@
 
             <!-- tab -->
             <TabControl Grid.Column="1">
-                <TabItem Header="PlayList" VerticalContentAlignment="Center">
-                    <ListBox Items="{Binding Playlists}">
+
+                <!-- playlists -->
+                <TabItem Header="Playlist" VerticalContentAlignment="Center">
+                    <ItemsControl Items="{Binding Playlists}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Tapped="PlaylistTapped">
+                                    <userControls:PlaylistControl DataContext="{Binding}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </TabItem>
+
+                <!-- history -->
+                <TabItem Header="History" VerticalContentAlignment="Center">
+                    <ListBox Items="{Binding Histories}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Grid Tapped="PlaylistTapped" ColumnDefinitions="*,*">
-                                    <TextBlock Grid.Column="0" Text="{Binding Name}"></TextBlock>
+                                <Grid KeyDown="ShowContext" Tapped="SelectionTapped" ColumnDefinitions="Auto,*">
+                                    <Image Width="15" Grid.Column="0" Source="{Binding Image}" />
+                                    <TextBlock IsVisible="True" Text="{Binding Name}" Grid.Column="1" />
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </TabItem>
                 
-                <TabItem Header="Song" VerticalContentAlignment="Center">
-                    
-                </TabItem>
             </TabControl>
         </Grid>
-        <!-- player -->
-        <WrapPanel Grid.Row="2">
+
+        <!-- player control -->
+        <WrapPanel Grid.Row="3">
+
+            <!-- player -->
             <vlc:VideoView Name="View" MediaPlayer="{Binding Player}" />
+
+            <!-- detail -->
             <Grid Tapped="DetailTapped">
-                <TextBlock Text="{Binding Url}"></TextBlock>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0"></Image>
+                <TextBlock Grid.Column="1" Text="{Binding Url}" />
             </Grid>
-            <Image Tapped="ModeChangeTapped" Width="15" Source="{Binding PlayModeImage}"></Image>
-            <Button Command="{Binding Play}">
-                <Image Width="15" Source="{Binding PlayImage}"></Image>
-            </Button>
-            <Slider Tapped="MusicTapped" Width="400" Maximum="1" Value="{Binding Pos}"></Slider>
+
+            <!-- player controller -->
+            <Grid HorizontalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <!-- slider -->
+                <Slider Grid.Row="0" Tapped="MusicTapped" Width="400" Maximum="1"
+                        Value="{Binding Pos}">
+                </Slider>
+
+                <WrapPanel Grid.Row="1" HorizontalAlignment="Center">
+                    
+                    <!-- mode change -->
+                    <Button Click="ModeChangeClick">
+                        <Image Width="15" Source="{Binding PlayModeImage}" />
+                    </Button>
+
+                    <!-- play or pause -->
+                    <Button Command="{Binding Play}">
+                        <Image Width="15" Source="{Binding PlayImage}" />
+                    </Button>
+                    
+                    <!-- next -->
+                    <Button Command="{Binding Next}">
+                        <Image Width="15" Source="../Assets/Next.png"></Image>
+                    </Button>
+                </WrapPanel>
+            </Grid>
         </WrapPanel>
     </Grid>
 

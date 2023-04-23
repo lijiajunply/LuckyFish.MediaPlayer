@@ -33,7 +33,7 @@ public static class ImageServer
     /// <summary>
     /// 单曲
     /// </summary>
-    public static IImage Single => new Bitmap(CodePath + "\\Assets\\SingleLoop.png");
+    public static IImage Single => new Bitmap(CodePath + "\\Assets\\Single.png");
     /// <summary>
     /// 单曲循环
     /// </summary>
