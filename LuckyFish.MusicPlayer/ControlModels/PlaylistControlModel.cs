@@ -9,7 +9,7 @@ public class PlaylistControlModel : ViewModelBase
 {
     #region Porp
 
-    private PlaylistModel _model = new PlaylistModel("asdf", "");
+    private PlaylistModel _model;
 
     public PlaylistModel Model
     {

@@ -15,13 +15,7 @@
     </Design.DataContext>
 
     <!-- window -->
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
 
         <!-- menu -->
         <Menu Grid.Row="0">
@@ -29,40 +23,33 @@
                 <MenuItem Click="OpenClick" Header="Open..." />
                 <MenuItem Click="AddPlaylistMenuClick" Header="Add a Playlist"></MenuItem>
                 <MenuItem Click="SettingOpenClick" Header="Setting" />
-                <MenuItem Click="OpenJsonClick" Header="Open the JSON File" />
                 <Separator />
                 <MenuItem Click="ExitClick" Header="Exit" />
             </MenuItem>
-            <!-- <MenuItem Header="Login.."> -->
-            <!--     <MenuItem Click="NetEaseLogin" Header="NetEase.." /> -->
-            <!--     <MenuItem Click="QQMusicLogin" Header="QQMusic.." /> -->
-            <!-- </MenuItem> -->
+            <MenuItem Header="Login">
+                <MenuItem Click="NetEaseLogin" Header="NetEaseMusic" />
+                <MenuItem Click="QQMusicLogin" Header="QQMusic" />
+            </MenuItem>
         </Menu>
 
         <Separator Grid.Row="1" />
 
         <!-- main window -->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-            </Grid.ColumnDefinitions>
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,*">
 
             <!-- playlist -->
-            <ListBox Grid.Column="0" Items="{Binding Playlist}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid KeyDown="ShowContext" Tapped="SelectionTapped">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                <ColumnDefinition></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <Image Width="15" Grid.Column="0" Source="{Binding Image}" />
-                            <TextBlock IsVisible="True" Text="{Binding Name}" Grid.Column="1" />
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+            <Grid Grid.Column="0">
+                <ListBox Items="{Binding Playlist}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid KeyDown="ShowContext" Tapped="SelectionTapped" ColumnDefinitions="Auto,*">
+                                <Image Width="15" Grid.Column="0" Source="{Binding Image}" />
+                                <TextBlock IsVisible="True" Text="{Binding Name}" Grid.Column="1" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
 
             <!-- tab -->
             <TabControl Grid.Column="1">
@@ -74,7 +61,7 @@
                             <ItemsPanelTemplate>
                                 <WrapPanel />
                             </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
+                        </ItemsControl.ItemsPanel> 
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid Tapped="PlaylistTapped">
@@ -109,26 +96,17 @@
             <vlc:VideoView Name="View" MediaPlayer="{Binding Player}" />
 
             <!-- detail -->
-            <Grid Tapped="DetailTapped">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Image Grid.Column="0"></Image>
-                <TextBlock Grid.Column="1" Text="{Binding Url}" />
+            <Grid HorizontalAlignment="Left" Tapped="DetailTapped" ColumnDefinitions="*,*">
+                <Image Height="30" Grid.Column="0" Source="{Binding PlayingMusic.Image}"></Image>
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" Text="{Binding PlayingMusic.Name}" />
             </Grid>
 
             <!-- player controller -->
-            <Grid HorizontalAlignment="Center">
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
+            <Grid HorizontalAlignment="Center" RowDefinitions="*,*">
 
                 <!-- slider -->
                 <Slider Grid.Row="0" Tapped="MusicTapped" Width="400" Maximum="1"
-                        Value="{Binding Pos}">
-                </Slider>
+                        Value="{Binding Pos}"/>
 
                 <WrapPanel Grid.Row="1" HorizontalAlignment="Center">
                     
@@ -139,12 +117,12 @@
 
                     <!-- play or pause -->
                     <Button Command="{Binding Play}">
-                        <Image Width="15" Source="{Binding PlayImage}" />
+                        <Image Width="15" Source="{Binding PlayImage}"/>
                     </Button>
                     
                     <!-- next -->
                     <Button Command="{Binding Next}">
-                        <Image Width="15" Source="../Assets/Next.png"></Image>
+                        <Image Width="15" Source="../Assets/PlayingSetting/Next.png"/>
                     </Button>
                 </WrapPanel>
             </Grid>

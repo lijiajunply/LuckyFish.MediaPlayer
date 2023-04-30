@@ -38,12 +38,6 @@ public partial class MainWindow : Window
         await window.ShowDialog(this);
     }
 
-    private async void OpenJsonClick(object? sender, RoutedEventArgs e)
-    {
-        var window = new TextView();
-        await window.ShowDialog(this);
-    }
-
     /// <summary>
     /// exit the app
     /// </summary>

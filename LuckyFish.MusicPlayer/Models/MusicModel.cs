@@ -48,7 +48,7 @@ public class MusicModel
     {
         Image = ImageServer.DefaultImage;
     }
-    public IImage? Image { get; set; }
+    public IImage Image { get; set; }
     public string Name { get; set; }
     public string Url { get; set; }
     public int Id { get; set; }

@@ -21,27 +21,27 @@ public static class ImageServer
     /// <summary>
     /// 播放键的图片
     /// </summary>
-    public static IImage PlayImage => new Bitmap(CodePath + "\\Assets\\Play.png");
+    public static IImage PlayImage => new Bitmap(CodePath + "\\Assets\\PlayingSetting\\Play.png");
     /// <summary>
     /// 暂停键
     /// </summary>
-    public static IImage PauseImage => new Bitmap(CodePath + "\\Assets\\Pause.png");
+    public static IImage PauseImage => new Bitmap(CodePath + "\\Assets\\PlayingSetting\\Pause.png");
     /// <summary>
     /// 列表循环
     /// </summary>
-    public static IImage ListLoop => new Bitmap(CodePath + "\\Assets\\ListLoop.png");
+    public static IImage ListLoop => new Bitmap(CodePath + "\\Assets\\PlayingSetting\\ListLoop.png");
     /// <summary>
     /// 单曲
     /// </summary>
-    public static IImage Single => new Bitmap(CodePath + "\\Assets\\Single.png");
+    public static IImage Single => new Bitmap(CodePath + "\\Assets\\PlayingSetting\\Single.png");
     /// <summary>
     /// 单曲循环
     /// </summary>
-    public static IImage SingleLoop => new Bitmap(CodePath + "\\Assets\\SingleLoop.png");
+    public static IImage SingleLoop => new Bitmap(CodePath + "\\Assets\\PlayingSetting\\SingleLoop.png");
     /// <summary>
     /// 随机循环
     /// </summary>
-    public static IImage RandomLoop => new Bitmap(CodePath + "\\Assets\\RandomLoop.png");
+    public static IImage RandomLoop => new Bitmap(CodePath + "\\Assets\\PlayingSetting\\RandomLoop.png");
     /// <summary>
     /// 默认图片
     /// </summary>

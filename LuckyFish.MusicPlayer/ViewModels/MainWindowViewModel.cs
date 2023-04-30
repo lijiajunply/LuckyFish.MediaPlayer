@@ -34,7 +34,7 @@ public class MainWindowViewModel : ViewModelBase
 
     #region Musics
 
-    public bool IsHistory { get; set; } = false;
+    private bool IsHistory { get; set; } = false;
     private ObservableCollection<MusicModel> _histories = new();
 
     public ObservableCollection<MusicModel> Histories
@@ -43,7 +43,7 @@ public class MainWindowViewModel : ViewModelBase
         set => SetField(ref _histories, value);
     }
 
-    private ObservableCollection<PlaylistControlModel> _playlists = new() { new PlaylistControlModel() };
+    private ObservableCollection<PlaylistControlModel> _playlists = new();
 
     /// <summary>
     /// playlists
@@ -52,17 +52,6 @@ public class MainWindowViewModel : ViewModelBase
     {
         get => _playlists;
         set => SetField(ref _playlists, value);
-    }
-
-    private string? _dirPath;
-
-    /// <summary>
-    /// the music pos
-    /// </summary>
-    private string? DirPath
-    {
-        get => _dirPath;
-        set => SetField(ref _dirPath, value);
     }
 
     private ObservableCollection<MusicModel> _playlist = new();
@@ -85,30 +74,14 @@ public class MainWindowViewModel : ViewModelBase
 
     #region Playing
 
-    private float _pos;
+    private MusicModel _playingMusic;
 
-    public float Pos
+    public MusicModel PlayingMusic
     {
-        get => _pos;
-        set => SetField(ref _pos, value);
-    }
-
-    private IImage _playImage;
-
-    public IImage PlayImage
-    {
-        get => _playImage;
-        set => SetField(ref _playImage, value);
-    }
-
-    private string _url;
-
-    public string Url
-    {
-        get => _url;
+        get => _playingMusic;
         set
         {
-            DirChanged(value);
+            PlaylistChanged(value.Url);
             bool isInit = false;
             if (Player != null)
             {
@@ -117,10 +90,10 @@ public class MainWindowViewModel : ViewModelBase
             }
 
             using var vlc = new LibVLC(enableDebugLogs: true);
-            using var media = new Media(vlc, new Uri(value));
+            using var media = new Media(vlc, new Uri(value.Url));
             Player = new MediaPlayer(media);
 
-            SetField(ref _url, Path.GetFileNameWithoutExtension(value));
+            SetField(ref _playingMusic, value);
 
             Player.PositionChanged += PositionChange;
             Player.EndReached += Done;
@@ -131,6 +104,22 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
+    private float _pos;
+
+    public float Pos
+    {
+        get => _pos;
+        set => SetField(ref _pos, value);
+    }
+
+    private IImage _playImage = ImageServer.PauseImage;
+
+    public IImage PlayImage
+    {
+        get => _playImage;
+        set => SetField(ref _playImage, value);
+    }
+    
     private bool IsPlaying { get; set; }
 
     #endregion
@@ -238,10 +227,10 @@ public class MainWindowViewModel : ViewModelBase
         }
 
         var s = Playlist[Index].Url;
-        ThreadPool.QueueUserWorkItem(_ => Url = s);
+        ThreadPool.QueueUserWorkItem(_ => PlayingMusic = new MusicModel(s));
     }
 
-    public void PlayChange(string url) => Url = url;
+    public void PlayChange(string url) => PlayingMusic = new MusicModel(url);
 
     public void Play()
     {
@@ -260,29 +249,24 @@ public class MainWindowViewModel : ViewModelBase
         IsPlaying = !IsPlaying;
     }
 
-    private void DirChanged(string url)
+    private void PlaylistChanged(string url)
     {
-        DirPath = Path.GetDirectoryName(url);
-        if (DirPath == null)
+        string? path = Path.GetDirectoryName(url);
+        if(path == null)return;
+        var dir = new DirectoryInfo(path);
+        if (Playlist.Count == 0)
         {
-        }
-        else
-        {
-            var dir = new DirectoryInfo(DirPath);
             if (IsHistory)
-            {
                 Playlist = Histories;
-            }
             else
             {
                 Playlist = new ObservableCollection<MusicModel>(dir.GetFiles()
                     .Where(x => x.Extension is ".mp3" or ".flac")
                     .Select(x => new MusicModel(x.FullName)));
             }
-
-            var model = Playlist.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x.Url) == url);
-            if (model != null) Index = Playlist.IndexOf(model);
         }
+        var model = Playlist.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x.Url) == url);
+        if (model != null) Index = Playlist.IndexOf(model);
     }
 
     #endregion
@@ -294,21 +278,21 @@ public class MainWindowViewModel : ViewModelBase
     /// </summary>
     public MainWindowViewModel()
     {
-        PlayImage = ImageServer.PauseImage;
-        PlayChange(ImageServer.CodePath + "\\Assets\\杨振宇 - 我们还是做朋友吧.flac");
+        PlayChange(ImageServer.CodePath + "\\Assets\\Music\\杨振宇 - 我们还是做朋友吧.flac");
         var a = PlaylistServer.Read();
         if (a == null) return;
-        Playlists = new ObservableCollection<PlaylistControlModel>(a.Select(model => new PlaylistControlModel(model)));
+        Playlists = new ObservableCollection<PlaylistControlModel>
+            (a.Select(model => new PlaylistControlModel(model)));
         Histories = new ObservableCollection<MusicModel>();
     }
 
     public MainWindowViewModel(string url)
     {
-        PlayImage = ImageServer.PauseImage;
         PlayChange(url);
         var a = PlaylistServer.Read();
         if (a == null) return;
-        Playlists = new ObservableCollection<PlaylistControlModel>(a.Select(model => new PlaylistControlModel(model)));
+        Playlists = new ObservableCollection<PlaylistControlModel>
+            (a.Select(model => new PlaylistControlModel(model)));
         Histories = new ObservableCollection<MusicModel>();
     }
 

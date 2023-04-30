@@ -1,0 +1,37 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:LuckyFish.MusicPlayer.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="LuckyFish.MusicPlayer.Views.EditPlaylistView"
+        Title="AddPlaylistView">
+    <Design.DataContext>
+        <viewModels:EditPlaylistViewModel />
+    </Design.DataContext>
+    <Grid>
+        <ItemsControl Items="{Binding Models}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid RowDefinitions="Auto,Auto,Auto">
+                        <Image Grid.Row="0" Width="80" Source="{Binding Image}"/>
+                        <WrapPanel Grid.Row="1">
+                            <Button Click="AddMusicClick" >Add</Button>
+                            <Button Click="DeleteClick" >Delete</Button>
+                        </WrapPanel>
+                        <ListBox Grid.Row="2" Items="{Binding Musics}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <WrapPanel>
+                                        <Image Height="30" Source="{Binding Image}"/>
+                                        <TextBlock Text="{Binding Name}"/>
+                                    </WrapPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</Window>

@@ -9,92 +9,92 @@ using iTunesSearch.Library;
 namespace LuckyFish.MusicPlayer.Server;
 
 public class ITunesAlbum
+{
+    private static HttpClient _httpClient = new();
+    private static iTunesSearchManager _searchManager = new();
+
+    public ITunesAlbum(string artist, string title, string coverUrl)
     {
-        private static HttpClient _httpClient = new();
-        private static iTunesSearchManager _searchManager = new();
-        
-        public ITunesAlbum(string artist, string title, string coverUrl)
+        Artist = artist;
+        Title = title;
+        CoverUrl = coverUrl;
+    }
+
+    public string Artist { get; set; }
+
+    public string Title { get; set; }
+
+    public string CoverUrl { get; set; }
+
+    private string CachePath => $"./Cache/{Artist} - {Title}";
+
+    public async Task<Stream> LoadCoverBitmapAsync()
+    {
+        if (File.Exists(CachePath + ".bmp"))
         {
-            Artist = artist;
-            Title = title;
-            CoverUrl = coverUrl;
+            return File.OpenRead(CachePath + ".bmp");
         }
-        
-        public string Artist { get; set; }
-        
-        public string Title { get; set; }
-        
-        public string CoverUrl { get; set; }
-        
-        private string CachePath => $"./Cache/{Artist} - {Title}";
-
-        public async Task<Stream> LoadCoverBitmapAsync()
+        else
         {
-            if (File.Exists(CachePath + ".bmp"))
-            {
-                return File.OpenRead(CachePath + ".bmp");
-            }
-            else
-            {
-                var data = await _httpClient.GetByteArrayAsync(CoverUrl);
+            var data = await _httpClient.GetByteArrayAsync(CoverUrl);
 
-                return new MemoryStream(data);
-            }
-        }
-
-        public async Task SaveAsync()
-        {
-            if (!Directory.Exists("./Cache"))
-            {
-                Directory.CreateDirectory("./Cache");
-            }
-
-            using (var fs = File.OpenWrite(CachePath))
-            {
-                await SaveToStreamAsync(this, fs);
-            }
-        }
-
-        public Stream SaveCoverBitmapSteam()
-        {
-            return File.OpenWrite(CachePath + ".bmp");
-        }
-
-        private static async Task SaveToStreamAsync(ITunesAlbum data, Stream stream)
-        {
-            await JsonSerializer.SerializeAsync(stream, data).ConfigureAwait(false);
-        }
-
-        public static async Task<ITunesAlbum> LoadFromStream(Stream stream)
-        {
-            return (await JsonSerializer.DeserializeAsync<ITunesAlbum>(stream).ConfigureAwait(false))!;
-        }
-
-        public static async Task<IEnumerable<ITunesAlbum>> LoadCachedAsync()
-        {
-            if (!Directory.Exists("./Cache"))
-            {
-                Directory.CreateDirectory("./Cache");
-            }
-
-            var results = new List<ITunesAlbum>();
-
-            foreach (var file in Directory.EnumerateFiles("./Cache"))
-            {
-                if (!string.IsNullOrWhiteSpace(new DirectoryInfo(file).Extension)) continue;
-                
-                await using var fs = File.OpenRead(file);
-                results.Add(await ITunesAlbum.LoadFromStream(fs).ConfigureAwait(false));
-            }
-
-            return results;
-        }
-
-        public static async Task<IEnumerable<ITunesAlbum>> SearchAsync(string searchTerm)
-        {
-            var query = await _searchManager.GetAlbumsAsync(searchTerm).ConfigureAwait(false);
-
-            return query.Albums.Select(x =>
-                new ITunesAlbum(x.ArtistName, x.CollectionName, x.ArtworkUrl100.Replace("100x100bb", "600x600bb")));
+            return new MemoryStream(data);
         }
     }
+
+    public async Task SaveAsync()
+    {
+        if (!Directory.Exists("./Cache"))
+        {
+            Directory.CreateDirectory("./Cache");
+        }
+
+        using (var fs = File.OpenWrite(CachePath))
+        {
+            await SaveToStreamAsync(this, fs);
+        }
+    }
+
+    public Stream SaveCoverBitmapSteam()
+    {
+        return File.OpenWrite(CachePath + ".bmp");
+    }
+
+    private static async Task SaveToStreamAsync(ITunesAlbum data, Stream stream)
+    {
+        await JsonSerializer.SerializeAsync(stream, data).ConfigureAwait(false);
+    }
+
+    public static async Task<ITunesAlbum> LoadFromStream(Stream stream)
+    {
+        return (await JsonSerializer.DeserializeAsync<ITunesAlbum>(stream).ConfigureAwait(false))!;
+    }
+
+    public static async Task<IEnumerable<ITunesAlbum>> LoadCachedAsync()
+    {
+        if (!Directory.Exists("./Cache"))
+        {
+            Directory.CreateDirectory("./Cache");
+        }
+
+        var results = new List<ITunesAlbum>();
+
+        foreach (var file in Directory.EnumerateFiles("./Cache"))
+        {
+            if (!string.IsNullOrWhiteSpace(new DirectoryInfo(file).Extension)) continue;
+
+            await using var fs = File.OpenRead(file);
+            results.Add(await ITunesAlbum.LoadFromStream(fs).ConfigureAwait(false));
+        }
+
+        return results;
+    }
+
+    public static async Task<IEnumerable<ITunesAlbum>> SearchAsync(string searchTerm)
+    {
+        var query = await _searchManager.GetAlbumsAsync(searchTerm).ConfigureAwait(false);
+
+        return query.Albums.Select(x =>
+            new ITunesAlbum(x.ArtistName, x.CollectionName, x.ArtworkUrl100.Replace("100x100bb", "600x600bb")));
+    }
+}

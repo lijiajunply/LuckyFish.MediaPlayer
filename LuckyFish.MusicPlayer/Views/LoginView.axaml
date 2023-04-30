@@ -7,7 +7,7 @@
         x:Class="LuckyFish.MusicPlayer.Views.LoginView"
         Title="LoginView">
         <Design.DataContext>
-                <vm:LoginViewModel></vm:LoginViewModel>
+                <vm:LoginViewModel/>
         </Design.DataContext>
         <Grid>
                 <Grid.RowDefinitions>
